@@ -5,91 +5,148 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Galerie - Flyere</title>
   <style>
-    :root{--bg:#f8fafc;--card:#fff;--muted:#6b7280}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{background:var(--bg);color:#111;display:flex;align-items:center;justify-content:center;padding:24px}
-    .wrap{max-width:1100px;width:100%}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    h1{font-size:20px;margin:0}
-    p.small{margin:0;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-    .card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,0.06);display:flex;flex-direction:column;cursor:pointer}
-    .card img{width:100%;height:0;object-fit:cover;display:block;aspect-ratio:3/4}
-    .meta{padding:10px 12px}
-    .meta h3{margin:0;font-size:14px}
-    .meta p{margin:6px 0 0;font-size:12px;color:var(--muted)}
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .18s}
-    .overlay.open{opacity:1;visibility:visible}
-    .overlay img{max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 10px 30px rgba(2,6,23,.6)}
-    .close-btn{position:fixed;right:18px;top:18px;background:#fff;border-radius:999px;padding:6px 10px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(15,23,42,0.1)}
-    footer{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
-    @media (max-width:520px){h1{font-size:18px}}
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+      margin: 0;
+      padding: 24px;
+    }
+    h1, h2 {
+      margin: 16px 0 8px;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    .gallery img {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+      cursor: pointer;
+      display: block;
+    }
+    /* Lightbox */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s;
+    }
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .overlay img {
+      max-width: 95%;
+      max-height: 95%;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(255,255,255,0.5);
+    }
+    .close-btn {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Flyere / Galerie</h1>
-        <p class="small">Scanează codul QR pentru a vedea flyerele.</p>
-      </div>
-      <div class="small">Pagină statică — funcționează pe orice telefon</div>
-    </header>
 
-    <main>
-      <div class="grid" id="gallery">
-        <!-- Card-urile vor fi generate din JavaScript -->
-      </div>
-    </main>
+  <header>
+    <h1>Flyere / Galerie</h1>
+    <p>Scanează codul QR și derulează pentru a vedea toate flyerele.</p>
+  </header>
 
-    <footer>Apasă pe o imagine pentru a o vedea full-screen.</footer>
+  <!-- Secțiune Pre Tatuaj -->
+  <div class="section">
+    <h2>Pre Tatuaj</h2>
+    <div class="gallery" id="pre-tatuaj"></div>
   </div>
 
-  <!-- lightbox -->
-  <div id="overlay" class="overlay" role="dialog" aria-modal="true">
+  <!-- Secțiune Post Tatuaj -->
+  <div class="section">
+    <h2>Post Tatuaj</h2>
+    <div class="gallery" id="post-tatuaj"></div>
+  </div>
+
+  <!-- Secțiune Instrucțiuni Folie -->
+  <div class="section">
+    <h2>Instrucțiuni Folie</h2>
+    <div class="gallery" id="folie"></div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="overlay" class="overlay">
     <button id="closeBtn" class="close-btn">✕</button>
     <img id="lightImg" src="" alt="Imagine">
   </div>
 
   <script>
-    // Lista imaginilor - înlocuiește cu exact numele fișierelor tale din folderul /images
-    const images = [
+    // Imagini pe secțiuni
+    const preTatuajImages = [
       'images/Pre tatuaj pg 1.png',
-      'images/Pre tatuaj pg 2.png',
-      'images/Post tatuaj.png',
-      'images/Post tatuaj pg 2.png',
-      'images/Folie vindecare.png',
-      // adaugă aici restul pozelor, fiecare între ghilimele și separate prin virgulă
+      'images/Pre tatuaj pg 2.png'
     ];
 
-    const gallery = document.getElementById('gallery');
-    images.forEach((src, i) => {
-      const card = document.createElement('article');
-      card.className = 'card';
-      card.innerHTML = `
-        <img loading="lazy" src="${src}" alt="Flyer ${i+1}"/>
-        <div class="meta">
-          <h3>Flyer ${i+1}</h3>
-          <p>Apasă pentru a vedea în mărime mare</p>
-        </div>`;
-      card.addEventListener('click', () => openLightbox(src));
-      gallery.appendChild(card);
-    });
+    const postTatuajImages = [
+      'images/Post tatuaj.png',
+      'images/Post tatuaj pg 2.png'
+    ];
 
+    const folieImages = [
+      'images/Folie vindecare.png'
+    ];
+
+    function populateGallery(containerId, images) {
+      const container = document.getElementById(containerId);
+      images.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.loading = 'lazy';
+        img.addEventListener('click', () => openLightbox(src));
+        container.appendChild(img);
+      });
+    }
+
+    populateGallery('pre-tatuaj', preTatuajImages);
+    populateGallery('post-tatuaj', postTatuajImages);
+    populateGallery('folie', folieImages);
+
+    // Lightbox
     const overlay = document.getElementById('overlay');
     const lightImg = document.getElementById('lightImg');
     const closeBtn = document.getElementById('closeBtn');
 
-    function openLightbox(src){
+    function openLightbox(src) {
       lightImg.src = src;
       overlay.classList.add('open');
     }
-    function closeLightbox(){
+
+    function closeLightbox() {
       overlay.classList.remove('open');
       lightImg.src = '';
     }
+
     closeBtn.addEventListener('click', closeLightbox);
-    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeLightbox(); });
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) closeLightbox();
+    });
   </script>
+
 </body>
 </html>
