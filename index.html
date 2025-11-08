@@ -1,22 +1,3 @@
-<!--
-Instrucțiuni rapide (română):
-Opțiune 1 (cel mai simplu, fără site): încarci pozele într-un album partajat (Google Photos / Dropbox / Imgur) => copiezi linkul albumului => folosești un generator QR gratuit (ex: qrmonkey, goqr, qr-code-generator) și lipești linkul => descarci QR-ul. Oricine scanează QR-ul va fi dus la album.
-
-Opțiune 2 (mai profesional - recomandat): folosești acest fișier HTML (index.html) + găzduire gratuită (GitHub Pages sau Netlify) -> generezi QR către URL-ul paginii. Avantaj: aspect personalizat, pagină care încarcă direct galerii, control asupra layout-ului.
-
-Pași rapizi pentru Opțiunea 2 (GitHub Pages):
-1. Crează un cont GitHub (dacă nu ai).
-2. Crează un repository public (de ex. "flyere-qr").
-3. Adaugă acest fișier index.html în repo.
-4. Creează un folder numit "images" în repo și încarcă imaginile (ex: flyer1.jpg, flyer2.jpg ...).
-5. Activează GitHub Pages din Settings -> Pages -> Branch: main -> / (root). GitHub îți va da un URL precum https://numele-tau.github.io/flyere-qr/
-6. Copiază URL-ul și folosește orice generator QR gratuit pentru a crea codul QR care pointează la acel URL.
-
-Notă: dacă nu vrei să folosești GitHub, poți folosi Netlify (drag & drop al folderului static) sau Vercel (deploy din repo). Ambele au planuri gratuite pentru site-uri statice.
-
----
-
-<!-- START index.html (salvează ca index.html) -->
 <!doctype html>
 <html lang="ro">
 <head>
@@ -32,12 +13,11 @@ Notă: dacă nu vrei să folosești GitHub, poți folosi Netlify (drag & drop al
     h1{font-size:20px;margin:0}
     p.small{margin:0;color:var(--muted)}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-    .card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,0.06);display:flex;flex-direction:column}
+    .card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,0.06);display:flex;flex-direction:column;cursor:pointer}
     .card img{width:100%;height:0;object-fit:cover;display:block;aspect-ratio:3/4}
     .meta{padding:10px 12px}
     .meta h3{margin:0;font-size:14px}
     .meta p{margin:6px 0 0;font-size:12px;color:var(--muted)}
-    /* lightbox */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .18s}
     .overlay.open{opacity:1;visibility:visible}
     .overlay img{max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 10px 30px rgba(2,6,23,.6)}
@@ -57,7 +37,6 @@ Notă: dacă nu vrei să folosești GitHub, poți folosi Netlify (drag & drop al
     </header>
 
     <main>
-      <!-- EDITEAZĂ: înlocuiește numele imaginilor din lista de mai jos cu numele fișierelor tale din folderul "images" -->
       <div class="grid" id="gallery">
         <!-- Card-urile vor fi generate din JavaScript -->
       </div>
@@ -73,21 +52,26 @@ Notă: dacă nu vrei să folosești GitHub, poți folosi Netlify (drag & drop al
   </div>
 
   <script>
-    // Lista imaginilor - înlocuiește aici cu numele fișierelor tale din folderul /images
+    // Lista imaginilor - înlocuiește cu exact numele fișierelor tale din folderul /images
     const images = [
-      'images/Folie vindecare.jpg'
-      'images/Post tatuaj.jpg'
-      'images/Post tatuaj pg 2.jpg'
-      'images/Pre tatuaj pg 1.jpg'
-     'images/Pre tatuaj pg 2.jpg'
-      // adaugă câte vrei
+      'images/Folie vindecare.jpg',
+      'images/Post tatuaj.jpg',
+      'images/Post tatuaj pg 2.jpg',
+      'images/Pre tatuaj pg 1.jpg',
+      'images/Pre tatuaj pg 2.jpg'
+      // adaugă aici restul pozelor, fiecare între ghilimele și separate prin virgulă
     ];
 
     const gallery = document.getElementById('gallery');
     images.forEach((src, i) => {
       const card = document.createElement('article');
       card.className = 'card';
-      card.innerHTML = `\n        <img loading="lazy" src="${src}" alt="Flyer ${i+1}"/>\n        <div class="meta">\n          <h3>Flyer ${i+1}</h3>\n          <p>Apasă pentru a vedea în mărime mare</p>\n        </div>`;
+      card.innerHTML = `
+        <img loading="lazy" src="${src}" alt="Flyer ${i+1}"/>
+        <div class="meta">
+          <h3>Flyer ${i+1}</h3>
+          <p>Apasă pentru a vedea în mărime mare</p>
+        </div>`;
       card.addEventListener('click', () => openLightbox(src));
       gallery.appendChild(card);
     });
@@ -106,8 +90,6 @@ Notă: dacă nu vrei să folosești GitHub, poți folosi Netlify (drag & drop al
     }
     closeBtn.addEventListener('click', closeLightbox);
     overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeLightbox(); });
-
   </script>
 </body>
 </html>
-<!-- END index.html -->
